@@ -53,11 +53,11 @@
                 <TextBlock x:Name="MetaTextBlock" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=ViewModel.MetaText, Mode=OneWay}"  
                            Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
 
-                <TextBlock x:Name="other" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=ViewModel.Authorization, Mode=OneWay}"  
+                <!--<TextBlock x:Name="other" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=ViewModel.Authorization, Mode=OneWay}"  
                            Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
 
                 <TextBlock x:Name="other2" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=ViewModel.Role, Mode=OneWay}"  
-                           Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
+                           Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />-->
             </StackPanel>
 
             <Button HorizontalAlignment="Center" Content="Iterate" Grid.Row="1" Opacity="0.5" Command="{x:Bind ViewModel.ButtonCommand}">

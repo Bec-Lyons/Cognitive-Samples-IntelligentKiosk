@@ -134,9 +134,11 @@ namespace IntelligentKioskSample.Views
                 this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.Tag, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
             }
 
+
             if (result?.Predictions != null)
             {
                 this.activeLearningButton.Opacity = 1;
+                this.WrapWholeWords.Text = result.Predictions.ToString();
 
                 this.PredictionDataForRetraining.Clear();
                 this.PredictionDataForRetraining.AddRange(result.Predictions.Select(
@@ -147,6 +149,7 @@ namespace IntelligentKioskSample.Views
                         TagName = t.Tag,
                         HasTag = Math.Round(t.Probability * 100) > 0
                     }));
+               
             }
             else
             {
@@ -199,6 +202,7 @@ namespace IntelligentKioskSample.Views
                 this.PicturesAppBarButton.IsEnabled = false;
             }
 
+            await StartWebCameraAsync();
             base.OnNavigatedTo(e);
         }
 

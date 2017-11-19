@@ -1,5 +1,7 @@
 ﻿{
   "dependencies": {
+    "Microsoft.Azure.EventHubs": "1.0.3",
+    "Microsoft.Bot.Connector.DirectLine": "3.0.2",
     "Microsoft.Cognitive.CustomVision.Prediction": "1.0.0",
     "Microsoft.Cognitive.CustomVision.Training": "1.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",

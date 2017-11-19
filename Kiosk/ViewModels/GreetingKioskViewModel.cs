@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.UI;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using IntelligentKioskSample.Model;
@@ -17,11 +16,13 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using ServiceHelpers;
 
+
+
 namespace IntelligentKioskSample.ViewModels
 {
     public class GreetingKioskViewModel : INotifyPropertyChanged
     {
-        private const string CongnitiveSubscriptionKey = "8bbdda653b824a4d9a2a93ced873e97e";
+        private const string CongnitiveSubscriptionKey = "";
         private const string CognitiveEndpoint = "https://australiaeast.api.cognitive.microsoft.com/vision/v1.0";
         private const string StorageAccountConnectionString = "DefaultEndpointsProtocol=https;AccountName=pactsa;AccountKey=kyJuQ0XxMLMqPZs29A6utilQLq8ozl8EMPuni0Fjcm4CoOMZ0oY/nGg8f4o1KDGd+fzQB5HqMUmNp4WsvkkvFA==;EndpointSuffix=core.windows.net";
 
@@ -40,7 +41,7 @@ namespace IntelligentKioskSample.ViewModels
         private SolidColorBrush _greetingColour;
         private SolidColorBrush _symbolColour;
         private Symbol _symbol;
-
+        public int timeNow;
 
         public Symbol Symbol
         {
@@ -85,6 +86,7 @@ namespace IntelligentKioskSample.ViewModels
 
         public GreetingKioskViewModel()
         {
+            timeNow = 0000;
             //insert keys and storage account values 
             _visionClient = new VisionServiceClient(CongnitiveSubscriptionKey, CognitiveEndpoint);
             _storageAccount = CloudStorageAccount.Parse(StorageAccountConnectionString);
@@ -102,6 +104,7 @@ namespace IntelligentKioskSample.ViewModels
             Symbol = Symbol.Contact;
             GreetingColour = new SolidColorBrush(Colors.White);
             SymbolColour = new SolidColorBrush(Colors.White);
+            
         }
 
         //puts block on seperate thread 
@@ -130,15 +133,26 @@ namespace IntelligentKioskSample.ViewModels
                 MetaText = safetyText;
                 bool isSafe;
 
+                bool sendToQueue = false;
+
                 if (safetyText.Contains("UNDETECTED"))
                 {
                     isSafe = false;
-
+                    if (timeNow != DateTime.Now.Minute)
+                    {
+                        timeNow = DateTime.Now.Minute;
+                        sendToQueue = true;
+                    }
                     //this.MetaText = await Task.Run(() => CheckSafetyGearAsync(e.GetImageStreamCallback())); ;
                 }
                 else
                 {
                     isSafe = true;
+                    if (timeNow != DateTime.Now.Minute)
+                    {
+                        timeNow = DateTime.Now.Minute;
+                        sendToQueue = true;
+                    }
                 }
 
                 if (e.IdentifiedPersons.Any() && !metadata[2].Contains("User not authorized") && isSafe)
@@ -147,6 +161,9 @@ namespace IntelligentKioskSample.ViewModels
                     GreetingColour = new SolidColorBrush(Colors.GreenYellow);
                     SymbolColour = new SolidColorBrush(Colors.GreenYellow);
                     Symbol = Symbol.Comment;
+                    await SaveToQueueAsync(metadata[3] + "  has successfully entered the Workroom 1!", "successful-queue", metadata[3], "Welcome");
+
+
                 }
                 else if (metadata[2].Contains("User not authorized"))
                 {
@@ -161,9 +178,14 @@ namespace IntelligentKioskSample.ViewModels
                     GreetingColour = new SolidColorBrush(Colors.Orange);
                     SymbolColour = new SolidColorBrush(Colors.Orange);
                     Symbol = Symbol.Remove;
-                    await SaveToQueueAsync(metadata[3] +
+                    if (sendToQueue && !metadata[3].Equals(""))
+                    {
+                        await SaveToQueueAsync(metadata[3] +
                                            " has attempted to enter the workroom but is not wearing their safety gear: " +
-                                           DateTime.Now.ToString("dd yyyy HHmm"));
+                                           DateTime.Now.ToString("dd yyyy HHmm"), "client-alerts", metadata[3], "Call");
+                        sendToQueue = false;
+                    }
+
                 }
             }
             else
@@ -172,15 +194,16 @@ namespace IntelligentKioskSample.ViewModels
             }
         }
 
+
         private string GetSafetyTextFromComputerVision(IReadOnlyCollection<Tag> tags)
         {
             var tagstring = "Safety Hat = UNDETECTED \r\n";
-            var vestString = "Safety vest = UNDETECTED \r\n";
+            var vestString = "Safety vest = CHECK \r\n";
             var debugString = "";
-            foreach (var tag in tags)
+            /*foreach (var tag in tags)
             {
                 debugString += tag.Name + " ";
-            }
+            }*/
 
             if (tags.Any(t => t.Name == "hat") || tags.Any(t => t.Name == "helmet") ||
                 tags.Any(t => t.Name == "headdress"))
@@ -225,7 +248,7 @@ namespace IntelligentKioskSample.ViewModels
                 await container.CreateIfNotExistsAsync();
 
                 //if it's a new container - send notification to Admin portal 
-                await SaveToQueueAsync(message);
+                await SaveToQueueAsync(message, "client-alerts", "unknown", "Onboard");
             }
 
             // Retrieve reference to a blob named "myblob".
@@ -235,20 +258,26 @@ namespace IntelligentKioskSample.ViewModels
             await blockBlob.UploadFromStreamAsync(imageStream);
         }
 
-        private async Task SaveToQueueAsync(string message)
+        private async Task SaveToQueueAsync(string message, string queueName, string worker, string cta)
+
         {
+            var time = DateTime.Now.ToString();
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(new { message = message, worker = worker, time = time, cta =  cta});
+
+
             // Create the queue client.
             var queueClient = _storageAccount.CreateCloudQueueClient();
 
             // Retrieve a reference to a queue.
-            var queue = queueClient.GetQueueReference("client-alerts");
+            var queue = queueClient.GetQueueReference(queueName);
 
 
             // Create the queue if it doesn't already exist.
             await queue.CreateIfNotExistsAsync();
 
             // Create a message and add it to the queue.
-            var queuemessage = new CloudQueueMessage(message);
+            
+            var queuemessage = new CloudQueueMessage(json);
 
             await queue.AddMessageAsync(queuemessage);
         }
@@ -296,10 +325,11 @@ namespace IntelligentKioskSample.ViewModels
                                 await SaveToQueueAsync(
                                     worker.Name +
                                     " has attempted to enter workroom but is not authorized. Call now " +
-                                    worker.MobileNo);
+                                    worker.MobileNo, "client-alerts", worker.Name, "Call");
                             }
                             break;
                     }
+                    
                 }
                 strings[1] = message;
                 strings[2] = message2;
@@ -328,6 +358,8 @@ namespace IntelligentKioskSample.ViewModels
                     await SaveImage(await img.GetImageStreamCallback(),
                         "new-person-detected-" + DateTime.Now.ToString("dd-yyyy-HHmm"),
                         "New Person Detected " + DateTime.Now.ToString("dd yyyy HHmm"));
+
+
                     ImageSaveCount++;
                 }
                 catch (Exception)

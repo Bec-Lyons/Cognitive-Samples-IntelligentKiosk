@@ -12,7 +12,7 @@
     <Page.Resources>
         <ctl:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
     </Page.Resources>
-    
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
@@ -21,9 +21,9 @@
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
-           
+
             <AppBarButton Icon="Video" Label="WebCam" x:Name="webCamButton" Click="OnWebCamButtonClicked"/>
-            
+
             <AppBarButton Icon="Globe" Label="Search" x:Name="PicturesAppBarButton" >
                 <AppBarButton.Flyout>
                     <Flyout x:Name="imageSearchFlyout">
@@ -35,7 +35,7 @@
             <CommandBar.Content>
                 <ctl:PageHeader>
                     <ctl:PageHeader.HeaderContent>
-						<TextBlock Text="Custom Vision Explorer" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                        <TextBlock Text="Custom Vision Explorer" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
                     </ctl:PageHeader.HeaderContent>
                 </ctl:PageHeader>
             </CommandBar.Content>
@@ -43,12 +43,13 @@
 
         <TextBlock x:Name="landingMessage" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Text="Select a photo to score it against the target project" Style="{StaticResource HeaderTextBlockStyle}"/>
 
-        <Grid Grid.Row="1" Margin="12" >
+
+        <Grid Grid.Row="1" Grid.Column="1" Margin="12" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" MinHeight="150"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"  >
                 <ComboBox ItemsSource="{Binding Projects}" x:Name="projectsComboBox" MinWidth="300" MaxWidth="600" >
 
@@ -101,7 +102,7 @@
                     <Button.Flyout>
                         <Flyout x:Name="activeLearningFlyout">
                             <StackPanel Orientation="Vertical" Width="400" MaxHeight="600" >
-                                <TextBlock TextWrapping="WrapWholeWords" Text="You can improve the results by providing tags for this image. Just adjust the results based on the appropriate tags and save. The image will be automatically added to the project and a re-training request will be made."/>
+                                <TextBlock x:Name="WrapWholeWords" TextWrapping="WrapWholeWords" Text="You can improve the results by providing tags for this image. Just adjust the results based on the appropriate tags and save. The image will be automatically added to the project and a re-training request will be made."/>
                                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" >
                                     <ListView Margin="0,12,0,12" ItemsSource="{Binding PredictionDataForRetraining}">
                                         <ListView.ItemTemplate>
@@ -116,7 +117,7 @@
                         </Flyout>
                     </Button.Flyout>
                 </Button>
-                
+
                 <Grid x:Name="webCamHostGrid" Visibility="Collapsed" Grid.Row="1" >
                     <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageFromCameraWithFaces" />
                     <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"/>
@@ -149,6 +150,9 @@
         </Grid>
 
         <ProgressRing x:Name="progressRing" Grid.Row="1" Width="100" Height="100" Foreground="White"/>
+      
+
+
 
     </Grid>
 </Page>

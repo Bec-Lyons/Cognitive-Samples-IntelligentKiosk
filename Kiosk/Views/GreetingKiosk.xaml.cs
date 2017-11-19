@@ -90,7 +90,15 @@ namespace IntelligentKioskSample.Views
                     }
                     else
                     {
-                        await ViewModel.ProcessCameraCapture(await cameraControl.CaptureFrameAsync());
+                        //this is where is breaks 
+                        try
+                        {
+                            await ViewModel.ProcessCameraCapture(await cameraControl.CaptureFrameAsync());
+                        }
+                        catch
+                        {
+                            faceLantencyDebugText.Text = "Houston we have a problem";
+                        }
                     }
 
                     var latency = DateTime.Now - start;
@@ -100,7 +108,7 @@ namespace IntelligentKioskSample.Views
 
                 //simplify timing 
                 //add counter 
-                await Task.Delay(cameraControl.NumFacesOnLastFrame == 0 ? 100 : 1000);
+                await Task.Delay(cameraControl.NumFacesOnLastFrame == 0 ? 1000 : 1000);
             }
         }
 
@@ -133,17 +141,27 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatedTo(e);
         }
 
+        public async Task OnSuccessfulOnboardAsync()
+        {
+            _isProcessingLoopInProgress = false;
+            Window.Current.Activated -= CurrentWindowActivationStateChanged;
+            cameraControl.CameraAspectRatioChanged -= CameraControl_CameraAspectRatioChanged;
+
+            await cameraControl.StopStreamAsync();
+            Frame.Navigate(typeof(CustomVisionExplorer));
+        }
+
         private void EnterKioskMode()
         {
-#if !DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+#if !DEBUG 
+           /*if (System.Diagnostics.Debugger.IsAttached)
                 return;
 
             var view = ApplicationView.GetForCurrentView();
             if (!view.IsFullScreenMode)
             {
                 view.TryEnterFullScreenMode();
-            }
+            }*/
 #endif
 
 

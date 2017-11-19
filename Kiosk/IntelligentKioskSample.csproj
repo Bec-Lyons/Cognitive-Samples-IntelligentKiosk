@@ -172,6 +172,8 @@
       <DependentUpon>PageHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\LiveCameraResult.cs" />
+    <Compile Include="Model\Object.cs" />
+    <Compile Include="Model\ObjectDataHelper.cs" />
     <Compile Include="Model\PactWorker.cs" />
     <Compile Include="Model\CustomVisionResult.cs" />
     <Compile Include="Model\Predictions.cs" />
