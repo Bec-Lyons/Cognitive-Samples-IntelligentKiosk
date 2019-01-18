@@ -23,8 +23,8 @@ namespace IntelligentKioskSample.ViewModels
     public class GreetingKioskViewModel : INotifyPropertyChanged
     {
         private const string CongnitiveSubscriptionKey = "";
-        private const string CognitiveEndpoint = "https://australiaeast.api.cognitive.microsoft.com/vision/v1.0";
-        private const string StorageAccountConnectionString = "DefaultEndpointsProtocol=https;AccountName=pactsa;AccountKey=kyJuQ0XxMLMqPZs29A6utilQLq8ozl8EMPuni0Fjcm4CoOMZ0oY/nGg8f4o1KDGd+fzQB5HqMUmNp4WsvkkvFA==;EndpointSuffix=core.windows.net";
+        private const string CognitiveEndpoint = "";
+        private const string StorageAccountConnectionString = "";
 
 
         private readonly List<PactWorker> _allFiles;
