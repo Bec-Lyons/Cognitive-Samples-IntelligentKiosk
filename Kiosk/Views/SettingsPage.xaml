@@ -69,7 +69,7 @@
                     <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
                     <PasswordBox Header="Text Analytics Key" Password="{Binding TextAnalyticsKey, Mode=TwoWay}" Margin="0,10,0,0"/>
-
+                
                 </StackPanel>
 
                 <StackPanel Margin="0,50,0,0">

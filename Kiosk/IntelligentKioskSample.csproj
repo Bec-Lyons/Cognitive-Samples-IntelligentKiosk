@@ -172,6 +172,8 @@
       <DependentUpon>PageHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\LiveCameraResult.cs" />
+    <Compile Include="Model\Object.cs" />
+    <Compile Include="Model\ObjectDataHelper.cs" />
     <Compile Include="Model\PactWorker.cs" />
     <Compile Include="Model\CustomVisionResult.cs" />
     <Compile Include="Model\Predictions.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="ViewModels\GreetingKioskViewModel.cs" />
     <Compile Include="Views\BingNewsAnalytics.xaml.cs">
       <DependentUpon>BingNewsAnalytics.xaml</DependentUpon>
     </Compile>
